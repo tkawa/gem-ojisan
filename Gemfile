@@ -55,6 +55,7 @@ group :development do
   gem 'letter_opener_web'
   gem 'bullet'
   gem 'erb2haml'
+  gem 'heroku_san'
 end
 
 
