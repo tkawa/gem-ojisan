@@ -1,0 +1,13 @@
+%nav.navbar.navbar-default.navbar-fixed-top
+  .container-fluid
+    .navbar-header
+      %button.navbar-toggle{"data-target" => ".navbar-collapse", "data-toggle" => "collapse", :type => "button"}
+        %span.sr-only Toggle navigation
+        %span.icon-bar
+        %span.icon-bar
+        %span.icon-bar
+      = link_to root_path, class: 'navbar-brand' do
+        = fa_icon 'heart', text: 'rails4base', class: 'navbar__link-icon'
+    .collapse.navbar-collapse
+      %ul.nav.navbar-nav.navbar-right
+        = render 'layouts/navigation_links'
