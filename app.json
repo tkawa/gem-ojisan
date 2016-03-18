@@ -12,7 +12,7 @@
     "newrelic:wayne",
     "papertrail:choklad",
     "sendgrid:starter"
-  ]
+  ],
   "scripts": {},
   "env": {
     "RAILS_ENV": "production"
