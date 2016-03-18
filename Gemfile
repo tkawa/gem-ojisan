@@ -1,11 +1,11 @@
 source 'https://rubygems.org'
 
 
-gem 'rails', '4.2.5.1'
+gem 'rails', '4.2.6'
 gem 'pg', '~> 0.15'
 
 # assets
-gem 'sass-rails', '~> 5.0'
+gem 'sassc-rails'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.1.0'
 gem 'jbuilder', '~> 2.0'
