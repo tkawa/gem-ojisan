@@ -15,6 +15,7 @@
   ],
   "scripts": {},
   "env": {
-    "RAILS_ENV": "production"
+    "RAILS_ENV": "production",
+    "APP_HOST": "rails4base-123.herokapp.com"
   }
 }
