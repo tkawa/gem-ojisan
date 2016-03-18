@@ -1,0 +1,20 @@
+{
+  "name": "Rails4base",
+  "description": "Starter application",
+  "logo": "http://rubyonrails.org/images/rails-logo.svg",
+  "repository": "https://github.com/shunichi/rails4base",
+  "keywords": [
+    "Ruby",
+    "Rails"
+  ],
+  "addons": [
+    "heroku-postgresql:hobby-dev",
+    "newrelic:wayne",
+    "papertrail:choklad",
+    "sendgrid:starter"
+  ]
+  "scripts": {},
+  "env": {
+    "RAILS_ENV": "production"
+  }
+}
