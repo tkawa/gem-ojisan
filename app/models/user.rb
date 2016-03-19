@@ -3,6 +3,9 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
-         :confirmable
+         :confirmable, :omniauthable
+  has_many :oauth_authentications, dependent: :destroy
   validates :name, presence: true, uniqueness: true
+
+  include Omniauthable
 end
