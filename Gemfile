@@ -27,6 +27,11 @@ gem 'font-awesome-rails'
 gem 'simple_form'
 gem 'kaminari'
 
+# authentication
+gem 'devise'
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
+
 # server
 gem 'puma'
 
