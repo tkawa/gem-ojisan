@@ -2,7 +2,7 @@
   "name": "Rails4base",
   "description": "Starter application",
   "logo": "http://rubyonrails.org/images/rails-logo.svg",
-  "repository": "https://github.com/shunichi/rails4base",
+  "repository": "https://github.com/shunichi/gem-ojisan",
   "keywords": [
     "Ruby",
     "Rails"
@@ -16,6 +16,6 @@
   "scripts": {},
   "env": {
     "RAILS_ENV": "production",
-    "APP_HOST": "rails4base-123.herokapp.com"
+    "APP_HOST": "gem-ojisan-123.herokapp.com"
   }
 }
