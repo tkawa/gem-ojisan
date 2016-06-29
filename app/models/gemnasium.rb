@@ -30,8 +30,8 @@ class Gemnasium
 
   def self.build_message(red_dependencies)
     out = StringIO.new
-    out.puts '## [Gemnasium セキュリティアラート]'
-    out.puts '問題のある gem が使われています！'
+    out.puts '【Gemおじさんからのお知らせ】'
+    out.puts '![](https://pbs.twimg.com/profile_images/425255790320947201/mNYZcFSq_bigger.jpeg) ヤバい gem が使われてるよー！'
     red_dependencies.each do |project_name, deps|
       out.puts "### #{project_name}"
       out.puts '```'
