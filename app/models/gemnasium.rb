@@ -23,14 +23,18 @@ class Gemnasium
     "https://www.remotty.net/api/v1/groups/#{remotty_group_id}/entries.json"
   end
 
-  def self.remotty_post_entry(message)
-    json = {entry: {content: message}}.to_json
+  def self.remotty_post_entry(message, parent_id = nil)
+    json = {entry: {content: message, parent_id: parent_id}}.to_json
     RestClient.post remotty_post_url, json, content_type: :json, accept: :json, Authorization: "Bearer #{remotty_token}"
   end
 
-  def self.build_message(red_dependencies)
+  def self.icon_message(message)
+    "![](https://pbs.twimg.com/profile_images/425255790320947201/mNYZcFSq_bigger.jpeg) #{message}"
+  end
+
+  def self.build_list_message(red_dependencies)
     out = StringIO.new
-    out.puts '![](https://pbs.twimg.com/profile_images/425255790320947201/mNYZcFSq_bigger.jpeg) ヤバい gem が使われてるぞー！'
+    out.puts icon_message("#{red_dependencies.size}個のプロジェクトで危険なgemが使われているよ。")
     red_dependencies.each do |project_name, deps|
       out.puts "### [#{project_name}](https://gemnasium.com/github.com/#{project_name})"
       deps.each do |dep|
@@ -43,6 +47,23 @@ class Gemnasium
         out.puts "- [#{package_name}: #{version} #{stable}](#{gem_url})"
       end
       out.puts
+    end
+    out.string
+  end
+
+  MAX_RANK = 10
+  def self.build_ranking_message(red_dependencies)
+    out = StringIO.new
+    out.puts icon_message('危険なgem数ランキングだよ！')
+    by_size = red_dependencies.group_by { |entry| entry.second.size }
+    rank = 1
+    by_size.keys.sort.reverse.each do |size|
+      by_size[size].each do |entry|
+        project_name = entry.first
+        out.puts "- #{rank}位 [#{project_name}](https://gemnasium.com/github.com/#{project_name}) (#{size}個)"
+      end
+      rank += by_size[size].size
+      break if rank > MAX_RANK
     end
     out.string
   end
@@ -60,7 +81,7 @@ class Gemnasium
       array.push slug if color == 'red'
     end
 
-    red_dependencies = red_projects.take(2).each_with_object({}) do |project_name, hash|
+    red_dependencies = red_projects.each_with_object({}) do |project_name, hash|
       Rails.logger.info "fetching dependencies for #{project_name} ..."
       gem_entries = JSON.parse RestClient.get gemnasium_api_url("/v1/projects/#{project_name}/dependencies")
       # 一度もチェックされていない場合 empty array が返る
@@ -68,7 +89,9 @@ class Gemnasium
     end
 
     if red_dependencies.present?
-      remotty_post_entry build_message(red_dependencies)
+      response = remotty_post_entry build_ranking_message(red_dependencies)
+      entry_id = JSON.parse(response)['id']
+      remotty_post_entry build_list_message(red_dependencies), entry_id
     end
 
     Rails.logger.info "Gemnasium.check end (#{(Time.now - start_time).to_i}sec)"
