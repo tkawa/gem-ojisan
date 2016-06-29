@@ -32,6 +32,9 @@ gem 'devise'
 gem 'omniauth'
 gem 'omniauth-google-oauth2'
 
+# network
+gem 'rest-client'
+
 # server
 gem 'puma'
 
