@@ -32,7 +32,7 @@ class Gemnasium
     out = StringIO.new
     out.puts '![](https://pbs.twimg.com/profile_images/425255790320947201/mNYZcFSq_bigger.jpeg) ヤバい gem が使われてるぞー！'
     red_dependencies.each do |project_name, deps|
-      out.puts "### #{project_name}"
+      out.puts "### [#{project_name}](https://gemnasium.com/github.com/#{project_name})"
       out.puts '```'
       deps.each do |dep|
         package = dep['package']
