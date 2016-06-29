@@ -33,15 +33,16 @@ class Gemnasium
     out.puts '![](https://pbs.twimg.com/profile_images/425255790320947201/mNYZcFSq_bigger.jpeg) ヤバい gem が使われてるぞー！'
     red_dependencies.each do |project_name, deps|
       out.puts "### [#{project_name}](https://gemnasium.com/github.com/#{project_name})"
-      out.puts '```'
       deps.each do |dep|
         package = dep['package']
         package_name = package['name'] if package
         dist = package['distributions'] if package
         stable = "(latest: #{dist['stable']})" if dist['stable']
-        out.puts "#{package_name}: #{dep['locked']} #{stable}"
+        version = dep['locked']
+        gem_url = "https://gemnasium.com/gems/#{package_name}/versions/#{version}"
+        out.puts "- [#{package_name}: #{version} #{stable}](#{gem_url})"
       end
-      out.puts '```'
+      out.puts
     end
     out.string
   end
@@ -59,7 +60,7 @@ class Gemnasium
       array.push slug if color == 'red'
     end
 
-    red_dependencies = red_projects.each_with_object({}) do |project_name, hash|
+    red_dependencies = red_projects.take(2).each_with_object({}) do |project_name, hash|
       Rails.logger.info "fetching dependencies for #{project_name} ..."
       gem_entries = JSON.parse RestClient.get gemnasium_api_url("/v1/projects/#{project_name}/dependencies")
       # 一度もチェックされていない場合 empty array が返る
