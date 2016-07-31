@@ -68,6 +68,25 @@ class Gemnasium
     out.string
   end
 
+  def self.build_stats_message(red_dependencies, not_red_projects, inactive_projects)
+    active_project_count = red_dependencies.size + not_red_projects.size
+    average_red_deps = active_project_count == 0 ? 0 : red_dependencies.values.map(&:size).sum / active_project_count.to_f
+
+    out = StringIO.new
+    out.puts icon_message('統計情報だよ！')
+    out.puts "- プロジェクトが使っている危険なgemの平均数 #{average_red_deps.round(1)}"
+    out.puts "- 全プロジェクト数 #{active_project_count + inactive_projects.size}"
+    out.puts "- 危険なgemを使っているプロジェクト数 #{red_dependencies.size}"
+    out.puts "- 危険なgemを使ってないプロジェクト数 #{not_red_projects.size}"
+    out.puts "- 一度もチェックされてないプロジェクト数 #{inactive_projects.size}"
+
+    out.string
+  end
+
+  def self.build_no_red_message
+    icon_message("危険なgemを使っているプロジェクトはないよ！\nすごい！おめでとう！")
+  end
+
   def self.check
     start_time = Time.now
     Rails.logger.info 'Gemnasium.check start'
@@ -75,23 +94,38 @@ class Gemnasium
     response = RestClient.get gemnasium_api_url('/v1/projects')
     result = JSON.parse(response)
 
-    red_projects = result[api_org_name].each_with_object([]) do |entry, array|
+    red_projects = []
+    not_red_projects = []
+    result[api_org_name].each do |entry|
       slug = entry['slug']
       color = entry['color']
-      array.push slug if color == 'red'
+      if color == 'red'
+        red_projects.push slug
+      else
+        not_red_projects.push slug
+      end
     end
 
-    red_dependencies = red_projects.each_with_object({}) do |project_name, hash|
+    red_dependencies = {}
+    inactive_projects = []
+    red_projects.each do |project_name|
       Rails.logger.info "fetching dependencies for #{project_name} ..."
       gem_entries = JSON.parse RestClient.get gemnasium_api_url("/v1/projects/#{project_name}/dependencies")
       # 一度もチェックされていない場合 empty array が返る
-      hash[project_name] = gem_entries.select { |entry| entry['color'] == 'red' } if gem_entries.present?
+      if gem_entries.present?
+        red_dependencies[project_name] = gem_entries.select { |entry| entry['color'] == 'red' }
+      else
+        inactive_projects.push project_name
+      end
     end
 
     if red_dependencies.present?
       response = remotty_post_entry build_ranking_message(red_dependencies)
       entry_id = JSON.parse(response)['id']
+      remotty_post_entry build_stats_message(red_dependencies, not_red_projects, inactive_projects), entry_id
       remotty_post_entry build_list_message(red_dependencies), entry_id
+    else
+      remotty_post_entry build_no_red_message
     end
 
     Rails.logger.info "Gemnasium.check end (#{(Time.now - start_time).to_i}sec)"
