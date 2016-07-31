@@ -55,14 +55,14 @@ class Gemnasium
   def self.build_ranking_message(red_dependencies)
     out = StringIO.new
     out.puts icon_message('危険なgem数ランキングだよ！')
-    by_size = red_dependencies.group_by { |entry| entry.second.size }
+    entries_by_red_count = red_dependencies.group_by { |entry| entry.second.size }
     rank = 1
-    by_size.keys.sort.reverse.each do |size|
-      by_size[size].each do |entry|
+    entries_by_red_count.keys.sort.reverse.each do |red_count|
+      entries_by_red_count[red_count].each do |entry|
         project_name = entry.first
-        out.puts "- #{rank}位 [#{project_name}](https://gemnasium.com/github.com/#{project_name}) (#{size}個)"
+        out.puts "- #{rank}位 [#{project_name}](https://gemnasium.com/github.com/#{project_name}) (#{red_count}個)"
       end
-      rank += by_size[size].size
+      rank += entries_by_red_count[red_count].size
       break if rank > MAX_RANK
     end
     out.string
