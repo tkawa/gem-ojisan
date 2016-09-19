@@ -38,6 +38,9 @@ gem 'rest-client'
 # server
 gem 'puma'
 
+# memory tuning
+gem 'memtuner', github: 'shunichi/memtuner-ruby'
+
 group :doc do
   gem 'sdoc', '~> 0.4.0'
 end

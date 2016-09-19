@@ -1,0 +1,9 @@
+.page-header
+  %h1 Memtuner
+
+%pre<>
+  %code<>
+    - if info = Memtuner.malloc_info.presence
+      = info
+    - else
+      No malloc_info!
