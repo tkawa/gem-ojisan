@@ -7,3 +7,11 @@
       = info
     - else
       No malloc_info!
+
+%h2 RSS usage
+- rss_usage = Memtuner.rss_usage
+%ul
+  %li
+    Current: #{rss_usage[:current]} (#{rss_usage[:current]/1024/1024}MB)
+  %li
+    Peak: #{rss_usage[:peak]} (#{rss_usage[:peak]/1024/1024}MB)

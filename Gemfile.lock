@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/shunichi/memtuner-ruby.git
-  revision: 2dce4debb3c9d972b33716868edfc30ed8862303
+  revision: 399f5f82136562aa53ee056860565766d2a3ceb0
   specs:
     memtuner (0.1.0)
 
