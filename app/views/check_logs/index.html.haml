@@ -1,0 +1,23 @@
+.page-hader
+  %h1 Rankings
+
+.rankings
+  - @check_logs.each do |check_log|
+    .ranking
+      %h2= l check_log.created_at
+      %table.table
+        %thaed
+          %tr
+            %th Rank
+            %th= Project::human_attribute_name :slug
+            %th= ProjectCheckLog::human_attribute_name :red_count
+            %th= ProjectCheckLog::human_attribute_name :dependency_count
+            %th Red rate
+        %tbody
+          - check_log.ranking(10).each do |rank, project_check_log|
+            %tr
+              %td= rank
+              %td= link_to project_check_log.project.slug, project_check_log.project
+              %td= project_check_log.red_count
+              %td= project_check_log.dependency_count
+              %td #{project_check_log.red_rate}%

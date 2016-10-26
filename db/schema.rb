@@ -11,10 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160319164737) do
+ActiveRecord::Schema.define(version: 20161026141846) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "check_logs", force: :cascade do |t|
+    t.integer  "remotty_entry_id"
+    t.integer  "remotty_stats_entry_id"
+    t.integer  "remotty_gems_entry_id"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "oauth_authentications", force: :cascade do |t|
     t.integer  "user_id"
@@ -30,6 +38,27 @@ ActiveRecord::Schema.define(version: 20160319164737) do
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end
+
+  create_table "project_check_logs", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "check_log_id"
+    t.string   "color",            null: false
+    t.integer  "red_count",        null: false
+    t.integer  "dependency_count", null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "project_check_logs", ["check_log_id"], name: "index_project_check_logs_on_check_log_id", using: :btree
+  add_index "project_check_logs", ["project_id"], name: "index_project_check_logs_on_project_id", using: :btree
+
+  create_table "projects", force: :cascade do |t|
+    t.string   "slug",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "projects", ["slug"], name: "index_projects_on_slug", unique: true, using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "name",                                null: false
@@ -58,4 +87,6 @@ ActiveRecord::Schema.define(version: 20160319164737) do
   add_index "users", ["name"], name: "index_users_on_name", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "project_check_logs", "check_logs"
+  add_foreign_key "project_check_logs", "projects"
 end

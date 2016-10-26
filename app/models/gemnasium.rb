@@ -87,47 +87,79 @@ class Gemnasium
     icon_message("危険なgemを使っているプロジェクトはないよ！\nすごい！おめでとう！")
   end
 
+  def initialize
+    response = RestClient.get self.class.gemnasium_api_url('/v1/projects')
+    json = JSON.parse(response)
+    build_project_check_logs(json)
+    build_dependencies
+    post_to_remotty
+  end
+
+  def build_project_check_logs(json)
+    @check_log = CheckLog.new
+    @projects = {}
+    @project_check_logs = {}
+    json[self.class.api_org_name].each do |entry|
+      slug = entry['slug']
+      color = entry['color']
+
+      project = Project.find_or_initialize_by(slug: slug)
+      @projects[slug] = project
+
+      project_check_log = ProjectCheckLog.new(project: project, color: color)
+      @check_log.project_check_logs << project_check_log
+      @project_check_logs[slug] = project_check_log
+    end
+  end
+
+  def build_dependencies
+    @red_dependencies = {}
+    @inactive_projects = []
+    @projects.keys.each do |slug|
+      project_check_log = @project_check_logs[slug]
+      Rails.logger.info "fetching dependencies for #{slug} ..."
+      gem_entries = JSON.parse RestClient.get self.class.gemnasium_api_url("/v1/projects/#{slug}/dependencies")
+      # 一度もチェックされていない場合 empty array が返る
+      if gem_entries.present?
+        red_deps = gem_entries.select { |entry| entry['color'] == 'red' }
+        @red_dependencies[slug] = red_deps unless red_deps.empty?
+        project_check_log.red_count = red_deps.count
+        project_check_log.dependency_count = gem_entries.count
+      else
+        @inactive_projects.push slug
+        project_check_log.red_count = 0
+        project_check_log.dependency_count = 0
+      end
+    end
+  end
+
+  def post_to_remotty
+    if @red_dependencies.present?
+      response = self.class.remotty_post_entry self.class.build_ranking_message(@red_dependencies)
+      @check_log.remotty_entry_id = JSON.parse(response)['id']
+
+      not_red_projects = @project_check_logs.values.select { |pcl| pcl.color != 'red' }.map { |pcl| pcl.project.slug }
+      not_red_projects -= @inactive_projects
+      response = self.class.remotty_post_entry self.class.build_stats_message(@red_dependencies, not_red_projects, @inactive_projects), @check_log.remotty_entry_id
+      @check_log.remotty_stats_entry_id = JSON.parse(response)['id']
+
+      response = self.class.remotty_post_entry self.class.build_list_message(@red_dependencies), @check_log.remotty_entry_id
+      @check_log.remotty_gems_entry_id = JSON.parse(response)['id']
+    else
+      response = self.class.remotty_post_entry self.class.build_no_red_message
+      @check_log.remotty_entry_id = JSON.parse(response)['id']
+    end
+  end
+
+  def save!
+    @check_log.save!
+  end
+
   def self.check
     start_time = Time.now
     Rails.logger.info 'Gemnasium.check start'
-
-    response = RestClient.get gemnasium_api_url('/v1/projects')
-    result = JSON.parse(response)
-
-    red_projects = []
-    not_red_projects = []
-    result[api_org_name].each do |entry|
-      slug = entry['slug']
-      color = entry['color']
-      if color == 'red'
-        red_projects.push slug
-      else
-        not_red_projects.push slug
-      end
-    end
-
-    red_dependencies = {}
-    inactive_projects = []
-    red_projects.each do |project_name|
-      Rails.logger.info "fetching dependencies for #{project_name} ..."
-      gem_entries = JSON.parse RestClient.get gemnasium_api_url("/v1/projects/#{project_name}/dependencies")
-      # 一度もチェックされていない場合 empty array が返る
-      if gem_entries.present?
-        red_dependencies[project_name] = gem_entries.select { |entry| entry['color'] == 'red' }
-      else
-        inactive_projects.push project_name
-      end
-    end
-
-    if red_dependencies.present?
-      response = remotty_post_entry build_ranking_message(red_dependencies)
-      entry_id = JSON.parse(response)['id']
-      remotty_post_entry build_stats_message(red_dependencies, not_red_projects, inactive_projects), entry_id
-      remotty_post_entry build_list_message(red_dependencies), entry_id
-    else
-      remotty_post_entry build_no_red_message
-    end
-
+    checker = Gemnasium.new
+    checker.save!
     Rails.logger.info "Gemnasium.check end (#{(Time.now - start_time).to_i}sec)"
   end
 

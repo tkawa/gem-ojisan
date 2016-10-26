@@ -1,0 +1,10 @@
+.page-header
+  %h1 Projects
+
+- projects_in_col = [(@projects.size + 2) / 3, 1].max
+.row
+  - @projects.each_slice(projects_in_col) do |projects|
+    .col-sm-4
+      %ul.list-unstyled.projects
+        - projects.each do |project|
+          %li.projects__item= link_to project.slug, project
