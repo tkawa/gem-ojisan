@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-ruby '2.4.2'
+ruby '2.5.1'
 
-gem 'rails', '5.0.6'
+gem 'rails', '5.1.6'
 gem 'pg', '~> 0.15'
 
 # assets
@@ -69,9 +69,7 @@ group :development do
   gem 'heroku_san'
 end
 
-
 group :production do
-  gem 'rails_12factor'
   gem 'heroku-deflater'
   gem 'newrelic_rpm'
 end
