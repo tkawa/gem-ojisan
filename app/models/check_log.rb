@@ -1,4 +1,4 @@
-class CheckLog < ActiveRecord::Base
+class CheckLog < ApplicationRecord
   has_many :project_check_logs, dependent: :destroy, inverse_of: :check_log
 
   def ranking(count)

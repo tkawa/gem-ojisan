@@ -1,4 +1,4 @@
-class ProjectCheckLog < ActiveRecord::Base
+class ProjectCheckLog < ApplicationRecord
   belongs_to :project, required: true, inverse_of: :project_check_logs
   belongs_to :check_log, required: true, inverse_of: :project_check_logs
 
