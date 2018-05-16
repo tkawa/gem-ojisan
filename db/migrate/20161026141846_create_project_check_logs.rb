@@ -1,4 +1,4 @@
-class CreateProjectCheckLogs < ActiveRecord::Migration
+class CreateProjectCheckLogs < ActiveRecord::Migration[4.2]
   def change
     create_table :project_check_logs do |t|
       t.references :project, index: true, foreign_key: true

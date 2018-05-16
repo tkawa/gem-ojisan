@@ -1,4 +1,4 @@
-class CreateOauthAuthentications < ActiveRecord::Migration
+class CreateOauthAuthentications < ActiveRecord::Migration[4.2]
   def change
     create_table :oauth_authentications do |t|
       t.integer :user_id

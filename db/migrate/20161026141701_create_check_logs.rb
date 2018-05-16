@@ -1,4 +1,4 @@
-class CreateCheckLogs < ActiveRecord::Migration
+class CreateCheckLogs < ActiveRecord::Migration[4.2]
   def change
     create_table :check_logs do |t|
       t.integer :remotty_entry_id
