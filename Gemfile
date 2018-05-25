@@ -40,19 +40,15 @@ gem 'puma'
 # memory tuning
 gem 'memtuner', github: 'shunichi/memtuner-ruby'
 
-group :doc do
-  gem 'sdoc', '~> 0.4.0'
-end
-
 group :development, :test do
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'faker'
   gem 'rspec-rails'
   gem 'timecop'
-  # gem 'capybara'
+  gem 'capybara'
   gem 'database_cleaner'
   gem 'launchy'
-  # gem 'poltergeist', '~> 1.6.0'
+  gem 'poltergeist'
   gem 'dotenv-rails'
 
   gem 'byebug'
@@ -65,7 +61,6 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'better_errors'
   gem 'binding_of_caller'
-  # gem 'quiet_assets'
   gem 'letter_opener_web'
   gem 'bullet'
   gem 'erb2haml'
