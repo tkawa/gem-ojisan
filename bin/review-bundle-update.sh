@@ -18,7 +18,8 @@ GEM_EXE_DIR=$(gem env | grep "EXECUTABLE DIRECTORY" | awk '{print $4}')
 export PATH=$PATH:$GEM_EXE_DIR
 
 # install gem tools
-gem install --no-document bundler-audit bundler_diffgems pull_request-create
+gem install --no-document bundler_diffgems pull_request-create specific_install
+gem specific_install tkawa/bundler-audit json-format
 
 # install github_httpsable
 if [ ! -x /tmp/github_httpsable ]; then
@@ -52,20 +53,22 @@ bundle --no-deployment --without nothing --jobs=4 --retry=3 --path vendor/bundle
 bundle audit update
 AUDIT=$(bundle audit)
 
-# bundle update
-bundle update
-TABLE=$(bundle diffgems -f md_table)
+if [ -n "${CREATE_PULL_REQUEST}" ]; then
+  # bundle update
+  bundle update
+  TABLE=$(bundle diffgems -f md_table)
 
-git add Gemfile.lock
-git commit -m "Bundle update ${HEAD_DATE}"
+  git add Gemfile.lock
+  git commit -m "Bundle update ${HEAD_DATE}"
 
-# git push
-git push origin "${HEAD}"
+  # git push
+  git push origin "${HEAD}"
 
-# pull request
-BODY="${AUDIT}
-***
-${TABLE}"
-pull-request-create create --title "Bundle update by sgcop ${HEAD_DATE}" --body "${BODY}"
+  # pull request
+  BODY="${AUDIT}
+  ***
+  ${TABLE}"
+  pull-request-create create --title "Bundle update by sgcop ${HEAD_DATE}" --body "${BODY}"
+fi
 
 exit 0

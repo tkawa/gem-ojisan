@@ -13,4 +13,12 @@ class CheckLog < ApplicationRecord
     end
     result
   end
+
+  def self.start_audit
+    check_log = create!
+    Project.all.each do |project|
+      AuditJob.perform_later(check_log, project)
+    end
+    ReportJob.perform_later(check_log)
+  end
 end
