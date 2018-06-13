@@ -53,7 +53,7 @@ HEAD="bundle/update-${HEAD_DATE}"
 git checkout -q -B "${HEAD}"
 
 # bundle install
-sed -i '' -e 's/^ruby /# ruby /' Gemfile
+sed -i -e 's/^ruby /# ruby /' Gemfile
 bundle --no-deployment --without nothing --jobs=4 --retry=3 --path vendor/bundle
 
 # bundle audit
