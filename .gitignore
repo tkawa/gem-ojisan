@@ -76,6 +76,7 @@ pickle-email-*.html
 
 # Environment files that may contain sensitive data
 .env
+.env.*
 .powenv
 
 config/settings.local.yml

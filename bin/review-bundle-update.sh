@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ev
 
-# PROJECT=SonicGarden/ishuran
+# PROJECT=SonicGarden/repo_name
 REPO_URL="https://github.com/${PROJECT}.git"
 # BASE_BRANCH=staging
 
@@ -26,7 +26,7 @@ if [ ! -x /tmp/github_httpsable ]; then
   curl -fSL https://github.com/packsaddle/rust-github_httpsable_cli/releases/download/v1.0.0/github_httpsable_cli-v1.0.0-x86_64-unknown-linux-musl.tar.gz \
     -o /tmp/github_httpsable_cli.tar.gz \
     && tar xzf /tmp/github_httpsable_cli.tar.gz -C /tmp \
-    && sudo chmod +x /tmp/github_httpsable
+    && chmod +x /tmp/github-httpsable
 fi
 
 mkdir -p /tmp/${PROJECT}_bundle_update
