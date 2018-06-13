@@ -1,5 +1,5 @@
 class AuthenticationController < Devise::OmniauthCallbacksController
-  skip_before_action :authenticate_user!
+  # skip_before_action :authenticate_user!
 
   def omniauth_callback
     @user = User.from_omniauth(request.env["omniauth.auth"], current_user)
