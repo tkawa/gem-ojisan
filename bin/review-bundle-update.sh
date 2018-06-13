@@ -62,7 +62,7 @@ AUDIT=$(bundle audit)
 
 if [ -n "${CREATE_PULL_REQUEST}" ]; then
   # bundle update
-  bundle update
+  bundle update --jobs=4 --retry=3
   TABLE=$(bundle diffgems -f md_table)
 
   restore-bundled-with
