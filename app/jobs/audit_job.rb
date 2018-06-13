@@ -1,7 +1,7 @@
 class AuditJob < ApplicationJob
   def perform(check_log, project)
     env = {'PROJECT' => project.slug}
-    system(env, Rails.root.join('bin/review-bundle-update').to_s)
+    system(env, Rails.root.join('bin/review-bundle-update.sh').to_s)
     json_string = `cd /tmp/#{project.slug}_bundle_update && bundle audit -F json` # TODO: improve
     result = JSON.parse(json_string)
 

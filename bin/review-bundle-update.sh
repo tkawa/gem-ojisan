@@ -24,8 +24,8 @@ export PATH=$PATH:$GEM_EXE_DIR
 
 # install gem tools
 gem install --no-document bundler_diffgems pull_request-create specific_install
-gem specific_install tkawa/bundler-audit json-format
-gem specific_install tkawa/ruby-restore_bundled_with
+gem specific_install https://github.com/tkawa/bundler-audit.git json-format
+gem specific_install https://github.com/tkawa/ruby-restore_bundled_with.git
 
 # install github_httpsable
 if [ ! -x /tmp/github_httpsable ]; then
