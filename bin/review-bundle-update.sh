@@ -58,7 +58,15 @@ bundle --no-deployment --without nothing --jobs=4 --retry=3 --path vendor/bundle
 
 # bundle audit
 bundle audit update
-AUDIT=$(bundle audit)
+AUDIT_TEXT=$(bundle audit)
+AUDIT_JSON=$(bundle audit -F json)
+
+if [ -n "${GEM_OJISAN_URL}" ]; then
+  curl -X POST \
+    -H "Content-Type: application/json" \
+    -d "${AUDIT_JSON}" \
+    "${GEM_OJISAN_URL}"
+fi
 
 if [ -n "${CREATE_PULL_REQUEST}" ]; then
   # bundle update
@@ -73,7 +81,7 @@ if [ -n "${CREATE_PULL_REQUEST}" ]; then
   git push origin "${HEAD}"
 
   # pull request
-  BODY="${AUDIT}
+  BODY="${AUDIT_TEXT}
   ***
   ${TABLE}"
   pull-request-create create --title "Bundle update by gem-ojisan ${HEAD_DATE}" --body "${BODY}"
