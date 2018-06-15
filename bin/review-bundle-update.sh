@@ -9,6 +9,7 @@ if [ -z "${PROJECT}" ]; then
   echo 'PROJECT env var required.'
   exit 1
 fi
+echo "PROJECT=${PROJECT}"
 
 if [ -n "${GITHUB_ACCESS_TOKEN}" ]; then
   export GITHUB_TOKEN="${GITHUB_ACCESS_TOKEN}"
@@ -59,6 +60,7 @@ bundle --no-deployment --without nothing --jobs=4 --retry=3 --path vendor/bundle
 # bundle audit
 bundle audit update
 AUDIT_TEXT=$(bundle audit)
+echo "${AUDIT_TEXT}"
 AUDIT_JSON=$(bundle audit -F json)
 
 if [ -n "${GEM_OJISAN_URL}" ]; then
