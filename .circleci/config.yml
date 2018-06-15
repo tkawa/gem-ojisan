@@ -13,5 +13,3 @@ jobs:
       - run:
           name: Run bundle update
           command: bin/review-bundle-update.sh
-          environment:
-            PROJECT: SonicGarden/ishuran
