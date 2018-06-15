@@ -10,9 +10,9 @@ class ProjectCheckLog < ApplicationRecord
 
   def self.build_from_audit(audit)
     project_check_log = new(color: audit['vulnerable'] ? 'red' : 'green')
-    project_check_log.advisories = result['advisories']
-    project_check_log.red_count = result['advisories'].count
-    project_check_log.dependency_count = result['advisories'].count
+    project_check_log.advisories = audit['advisories']
+    project_check_log.red_count = audit['advisories'].count
+    project_check_log.dependency_count = audit['advisories'].count
     project_check_log
   end
 end
