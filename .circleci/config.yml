@@ -1,0 +1,17 @@
+# see: https://circleci.com/docs/2.0/language-ruby/
+
+version: 2
+jobs:
+  bundle_update:
+    docker:
+      - image: circleci/ruby:2.5.1-node
+        environment:
+          TZ: /usr/share/zoneinfo/Asia/Tokyo
+    working_directory: ~/bundle_update
+    steps:
+      - checkout
+      - run:
+          name: Run bundle update
+          command: bin/review-bundle-update.sh
+          environment:
+            PROJECT: SonicGarden/ishuran
