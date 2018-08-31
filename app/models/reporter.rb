@@ -17,7 +17,14 @@ class Reporter
 
   def self.remotty_post_entry(message, parent_id = nil)
     json = {entry: {content: message, parent_id: parent_id}}.to_json
-    RestClient.post remotty_post_url, json, content_type: :json, accept: :json, Authorization: "Bearer #{remotty_token}"
+
+    conn = Faraday.new(remotty_post_url) do |b|
+      b.request :json
+      b.request :oauth2, remotty_token, token_type: :bearer
+      b.response :json
+      b.adapter Faraday.default_adapter
+    end
+    conn.post('', json)
   end
 
   def self.icon_message(message)

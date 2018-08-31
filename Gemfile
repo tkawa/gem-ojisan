@@ -32,7 +32,8 @@ gem 'omniauth'
 gem 'omniauth-google-oauth2'
 
 # network
-gem 'rest-client'
+gem 'faraday'
+gem 'faraday_middleware'
 
 # server
 gem 'puma'

@@ -4,9 +4,7 @@ Rails.application.routes.draw do
 
   resources :check_logs, only: %i(index show)
   resources :projects, only: %i(index show) do
-    member do
-      post 'check_logs/:check_log_id', to: 'project_check_logs#create'
-    end
+    resources :check_logs, controller: 'project_check_logs', only: %i(create show)
   end
 
   get '/memtuner', to: 'memtuner#show'

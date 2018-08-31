@@ -1,38 +1,29 @@
 class AuditJob < ApplicationJob
-  def perform(check_log, project)
-    env = {'PROJECT' => project.slug}
-    system(env, Rails.root.join('bin/review-bundle-update.sh').to_s)
-    json_string = `cd /tmp/#{project.slug}_bundle_update && bundle audit -F json` # TODO: improve
-    result = JSON.parse(json_string)
+  include Rails.application.routes.url_helpers
 
-    if result['vulnerable']
-      project_check_log = ProjectCheckLog.new(project: project, check_log: check_log, color: 'red')
-      project_check_log.advisories = results['advisories']
-      project_check_log.red_count = results['advisories'].count
-      project_check_log.dependency_count = results['advisories'].count
-    else
-      project_check_log = ProjectCheckLog.new(project: project, check_log: check_log, color: 'green')
-      project_check_log.red_count = 0
-      project_check_log.dependency_count = 0
+  def perform(check_log, project)
+    url = project_check_log_url(project_id: project.id, id: check_log.id, user: ENV['BASIC_AUTH_USER'], password: ENV['BASIC_AUTH_PASS'])
+    build_parameters = {
+      CIRCLE_JOB: 'bundle_update',
+      PROJECT: project.slug,
+      GEM_OJISAN_URL: url
+    }
+
+    circle_trigger_url = 'https://circleci.com/api/v1.1/project/github/tkawa/gem-ojisan/tree/self-audit' # FIXME
+    conn = Faraday.new(circle_trigger_url) do |b|
+      b.request  :url_encoded
+      b.basic_auth ENV['CIRCLE_API_USER_TOKEN'], ''
+      b.response :json
+      b.response :logger
+      b.adapter Faraday.default_adapter
     end
-    project_check_log.save
+    conn.post('', build_parameters: build_parameters)
   end
 
-  # bundler-audit JSON
-  # {
-  #   "vulnerable": true,
-  #   "insecure_sources": [
-  #
-  #   ],
-  #   "advisories": [
-  #     {
-  #       "name": "loofah",
-  #       "version": "2.1.1",
-  #       "advisory": "CVE-2018-8048",
-  #       "criticality": "Unknown",
-  #       "url": "https://github.com/flavorjones/loofah/issues/144",
-  #       "description": "Loofah allows non-whitelisted attributes to be present in sanitized\noutput when input with specially-crafted HTML fragments.\n",
-  #       "title": "Loofah XSS Vulnerability",
-  #       "solution": "upgrade to >= 2.2.1"
-  #     },
+  private
+
+  def default_url_options
+    # {host: 'gem-ojisan-staging.herokuapp.com', protocol: 'https'}
+    Rails.application.config.action_mailer.default_url_options
+  end
 end
