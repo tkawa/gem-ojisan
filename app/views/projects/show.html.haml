@@ -4,14 +4,30 @@
 %table.table
   %thead
     %tr
-      %th Time
+      %th
+      %th Checked at
       %th= ProjectCheckLog.human_attribute_name :red_count
       %th= ProjectCheckLog.human_attribute_name :dependency_count
       %th Red rate
   %tbody
     - @project.project_check_logs.includes(:check_log).order(created_at: :desc).take(10).each do |project_check_log|
       %tr
-        %td= project_check_log.check_log.created_at
+        %td
+          - if project_check_log.advisories.present?
+            %button.btn.btn-xs.btn-default{data: { toggle: 'collapse', target: "##{dom_id(project_check_log)}_advisories" }} ＋
+        %td= l project_check_log.check_log.created_at
         %td= project_check_log.red_count
         %td= project_check_log.dependency_count
         %td #{project_check_log.red_rate}%
+      - if project_check_log.advisories.present?
+        %tr.collapse{id: "#{dom_id(project_check_log)}_advisories"}
+          %td{colspan: 5, style: 'background-color: whitesmoke'}
+            - project_check_log.advisories.each do |advisory|
+              %h3 #{advisory['name']} #{advisory['version']}
+              %p
+                %strong= advisory['title']
+              %p= link_to advisory['url']
+              %div= simple_format h(advisory['description'])
+              %p
+                %strong Solution:
+                = advisory['solution']
