@@ -2,6 +2,11 @@ class ProjectCheckLogsController < ApplicationController
   # wrap_parameters :audit
   skip_forgery_protection
 
+  def index
+    project = Project.find(params[:project_id])
+    redirect_to project
+  end
+
   # bundler-audit JSON
   # {
   #   "vulnerable": true,
@@ -21,7 +26,7 @@ class ProjectCheckLogsController < ApplicationController
   #     }, …
   def create
     project = Project.find(params[:project_id])
-    check_log = CheckLog.find(params[:id])
+    check_log = CheckLog.find(params[:check_log_id])
     project_check_log = ProjectCheckLog.build_from_audit(audit)
     project_check_log.project = project
     project_check_log.check_log = check_log

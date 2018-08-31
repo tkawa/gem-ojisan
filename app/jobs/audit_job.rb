@@ -2,7 +2,7 @@ class AuditJob < ApplicationJob
   include Rails.application.routes.url_helpers
 
   def perform(check_log, project)
-    url = project_check_log_url(project_id: project.id, id: check_log.id, user: ENV['BASIC_AUTH_USER'], password: ENV['BASIC_AUTH_PASS'])
+    url = project_check_logs_url(project_id: project.id, check_log_id: check_log.id, user: ENV['BASIC_AUTH_USER'], password: ENV['BASIC_AUTH_PASS'])
     build_parameters = {
       CIRCLE_JOB: 'bundle_update',
       PROJECT: project.slug,
