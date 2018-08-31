@@ -17,8 +17,9 @@ class CheckLog < ApplicationRecord
   def self.start_audit
     check_log = create!
     Project.all.each do |project|
-      AuditJob.perform_later(check_log, project)
+      AuditJob.perform_now(check_log, project)
+      sleep 1
     end
-    ReportJob.perform_later(check_log)
+    # ReportJob.perform_later(check_log)
   end
 end
